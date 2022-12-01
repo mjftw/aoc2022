@@ -1,6 +1,6 @@
-def solve(path):
-    f = open(path)
-    lines = f.readlines()
+def solve(input_path):
+    with open(input_path) as file:
+        lines = file.readlines()
 
     elf_calories = []
     total = 0
