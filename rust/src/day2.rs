@@ -28,7 +28,7 @@ pub fn solve(input_path: &Path) {
 
     let total: i32 = scores.sum();
 
-    println!("Part 1 answer: {}", total);
+    println!("Part 2 answer: {}", total);
 }
 
 fn parse_line(line: &str) -> Result<Round, String> {
@@ -38,16 +38,18 @@ fn parse_line(line: &str) -> Result<Round, String> {
     let their_choice = Choice::parse(
         captures
             .get(1)
-            .ok_or("Cannot find capture group 0")?
-            .as_str(),
-    )?;
-
-    let our_choice = Choice::parse(
-        captures
-            .get(2)
             .ok_or("Cannot find capture group 1")?
             .as_str(),
     )?;
+
+    let required_outcome = Outcome::parse(
+        captures
+            .get(2)
+            .ok_or("Cannot find capture group 2")?
+            .as_str(),
+    )?;
+
+    let our_choice = their_choice.pick_for_outcome(&required_outcome);
 
     Ok(Round {
         their_choice: their_choice,
@@ -55,7 +57,7 @@ fn parse_line(line: &str) -> Result<Round, String> {
     })
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 enum Choice {
     Rock,
     Paper,
@@ -68,9 +70,6 @@ impl Choice {
             "A" => Ok(Self::Rock),
             "B" => Ok(Self::Paper),
             "C" => Ok(Self::Scissors),
-            "X" => Ok(Self::Rock),
-            "Y" => Ok(Self::Paper),
-            "Z" => Ok(Self::Scissors),
             _ => Err(format!("Unknown choice: \"{}\"", input)),
         }
     }
@@ -82,9 +81,21 @@ impl Choice {
             Choice::Scissors => 3,
         }
     }
+
+    fn pick_for_outcome(&self, outcome: &Outcome) -> Choice {
+        match (self, outcome) {
+            (theirs, Outcome::Draw) => *theirs,
+            (Choice::Rock, Outcome::Win) => Choice::Paper,
+            (Choice::Rock, Outcome::Lose) => Choice::Scissors,
+            (Choice::Paper, Outcome::Win) => Choice::Scissors,
+            (Choice::Paper, Outcome::Lose) => Choice::Rock,
+            (Choice::Scissors, Outcome::Win) => Choice::Rock,
+            (Choice::Scissors, Outcome::Lose) => Choice::Paper,
+        }
+    }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 enum Outcome {
     Win,
     Draw,
@@ -92,6 +103,15 @@ enum Outcome {
 }
 
 impl Outcome {
+    fn parse(input: &str) -> Result<Self, String> {
+        match input {
+            "X" => Ok(Self::Lose),
+            "Y" => Ok(Self::Draw),
+            "Z" => Ok(Self::Win),
+            _ => Err(format!("Unknown outcome: \"{}\"", input)),
+        }
+    }
+
     fn value(&self) -> i32 {
         match *self {
             Outcome::Win => 6,
@@ -101,7 +121,7 @@ impl Outcome {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 struct Round {
     their_choice: Choice,
     our_choice: Choice,
