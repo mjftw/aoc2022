@@ -1,30 +1,27 @@
+extern crate itertools;
+
+use itertools::Itertools;
+
 use std::{
     collections::HashSet,
     fs::File,
     io::{BufRead, BufReader},
     path::Path,
 };
+
 pub fn solve(input_path: &Path) {
     let file = File::open(input_path).unwrap();
-    let reader = BufReader::new(file);
 
-    let scores = reader
+    let answer_part2 = BufReader::new(file)
         .lines()
-        .map(|line| calculate_line_score(&line.unwrap()));
+        .map(|line| line.unwrap().chars().collect::<HashSet<char>>())
+        .chunks(3)
+        .into_iter()
+        .map(|chunk| chunk.reduce(|a, b| &a & &b).unwrap())
+        .map(|common| common.into_iter().map(|l| letter_score(&l)).sum::<u32>())
+        .sum::<u32>();
 
-    let answer_part1: u32 = scores.sum();
-
-    println!("Day 3 part 1 answer: {}", answer_part1);
-}
-
-fn calculate_line_score(line: &str) -> u32 {
-    let (half1, half2) = line.split_at(line.len() / 2);
-    let set1: HashSet<char> = half1.chars().collect();
-    let set2: HashSet<char> = half2.chars().collect();
-
-    let common = set1.intersection(&set2);
-
-    common.map(letter_score).sum()
+    println!("Day 3 part 2 answer: {}", answer_part2);
 }
 
 fn letter_score(letter: &char) -> u32 {
