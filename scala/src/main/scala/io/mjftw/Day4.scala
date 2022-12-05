@@ -12,28 +12,28 @@ class DecodeError(msg: String) extends Throwable(msg)
 case class Bounds(lower: Int, upper: Int) {
   def contains(other: Bounds): Boolean =
     lower <= other.lower && upper >= other.upper
+
+  def overlaps(other: Bounds): Boolean =
+    (lower <= other.lower && upper >= other.lower) || (other.lower <= lower && lower <= other.upper)
 }
 
 object Day4 {
 
   def solve(inputPath: String): IO[Unit] = {
 
-    val answerPart1 = Files[IO]
+    val answerPart2 = Files[IO]
       .readUtf8Lines(Path(inputPath))
       .map(lineToBounds)
       .rethrow
       .collect {
-        case ((bounds1, bounds2))
-            if bounds1.contains(bounds2) || bounds2.contains(bounds1) =>
-          1
-
+        case ((bounds1, bounds2)) if bounds1.overlaps(bounds2) => 1
       }
       .fold(0)(_ + _)
       .compile
       .toList
       .map(_.head)
 
-    answerPart1.flatMap(answer => IO.println(s"Day 4 part 1 answer: $answer"))
+    answerPart2.flatMap(answer => IO.println(s"Day 4 part 2 answer: $answer"))
   }
 
   private def lineToBounds(
