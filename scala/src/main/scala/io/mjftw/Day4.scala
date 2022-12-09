@@ -7,17 +7,15 @@ import fs2.{Stream, text}
 import fs2.io.file.{Files, Path}
 import scala.util.matching.Regex
 
-class DecodeError(msg: String) extends Throwable(msg)
-
-case class Bounds(lower: Int, upper: Int) {
-  def contains(other: Bounds): Boolean =
-    lower <= other.lower && upper >= other.upper
-
-  def overlaps(other: Bounds): Boolean =
-    (lower <= other.lower && upper >= other.lower) || (other.lower <= lower && lower <= other.upper)
-}
-
 object Day4 {
+  class DecodeError(msg: String) extends Throwable(msg)
+  case class Bounds(lower: Int, upper: Int) {
+    def contains(other: Bounds): Boolean =
+      lower <= other.lower && upper >= other.upper
+
+    def overlaps(other: Bounds): Boolean =
+      (lower <= other.lower && upper >= other.lower) || (other.lower <= lower && lower <= other.upper)
+  }
 
   def solve(inputPath: String): IO[Unit] = {
 

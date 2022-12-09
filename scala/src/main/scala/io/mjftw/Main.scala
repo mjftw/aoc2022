@@ -11,9 +11,12 @@ object Main extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] = {
     args match {
-      case day4InputPath :: _ =>
-        Day4.solve(day4InputPath).as(ExitCode.Success)
-      case _ => IO.println("Must provide day 4 input path").as(ExitCode.Error)
+      case "4" :: inputPath :: _ =>
+        Day4.solve(inputPath).as(ExitCode.Success)
+      case "5" :: inputPath :: _ =>
+        Day5.solve(inputPath).as(ExitCode.Success)
+      case _ =>
+        IO.println("Must provide valid day and input path").as(ExitCode.Error)
     }
   }
 }
