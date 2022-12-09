@@ -21,10 +21,21 @@ dirsize() {
 }
 export -f dirsize
 
-THRESHOLD=100000
-
+echo -n "Day 7 part 1 answer: "
 find -type d -exec bash -c 'dirsize "$0"' {} \; | \
-    awk -F" " "{if(\$2<=$THRESHOLD)print\$2}" | \
+    awk -F' ' '{if($2<=100000)print$2}' | \
     awk '{s+=$1} END {print s}'
+
+DISK_SIZE=70000000
+DISK_NEEDED=30000000
+TOTAL_DISK_USED=$(dirsize $ROOT_DIR | awk '{s+=$2} END {print s}')
+EXTRA_SIZE_NEEDED=$(($DISK_NEEDED - ($DISK_SIZE - $TOTAL_DISK_USED)))
+
+echo -n "Day 7 part 2 answer: "
+find -type d -exec bash -c 'dirsize "$0"' {} \; | \
+    awk -F' ' "{if(\$2>=$EXTRA_SIZE_NEEDED)print \$0}" | \
+    sort -k2 -n | \
+    head -n 1 | \
+    cut -d" " -f2
 
 rm -r $ROOT_DIR
