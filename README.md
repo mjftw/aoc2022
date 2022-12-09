@@ -11,3 +11,6 @@ So far we have:
 | 2 | Rust, Python | Functional Programming, Imperative |
 | 3 | Rust | Functional Programming |
 | 4 | Scala | Functional Programming |
+| 5 | Scala | Functional Programming |
+| 6 | Clojure | Functional Programming |
+| 7 | Bash | Linux command line foo |
